@@ -12,9 +12,10 @@ type AppHeaderProps = {
   brand?: string;
   navItems?: NavItem[];
   onLogout?: () => void;
+  userName?: string;
 };
 
-export function AppHeader({ brand = "Todo App", navItems, onLogout }: AppHeaderProps) {
+export function AppHeader({ brand = "Todo App", navItems, onLogout, userName }: AppHeaderProps) {
   const items: NavItem[] = [];
 
   if (navItems && navItems.length > 0) {
@@ -49,22 +50,25 @@ export function AppHeader({ brand = "Todo App", navItems, onLogout }: AppHeaderP
           <MKTypography variant="h6" sx={{ fontWeight: 700 }}>
             {brand}
           </MKTypography>
-          {items.length > 0 && (
-            <Box display="flex" alignItems="center" gap={1.5}>
-              {items.map(item => (
-                <MKButton
-                  key={item.label}
-                  color="info"
-                  size="small"
-                  onClick={item.onClick}
-                  component={item.href ? "a" : undefined}
-                  href={item.href}
-                >
-                  {item.label}
-                </MKButton>
-              ))}
-            </Box>
-          )}
+          <Box display="flex" alignItems="center" gap={1.5}>
+            {items.map(item => (
+              <MKButton
+                key={item.label}
+                color="info"
+                size="small"
+                onClick={item.onClick}
+                component={item.href ? "a" : undefined}
+                href={item.href}
+              >
+                {item.label}
+              </MKButton>
+            ))}
+            {userName && (
+              <MKTypography variant="body2" sx={{ fontWeight: 500 }}>
+                {userName}
+              </MKTypography>
+            )}
+          </Box>
         </Toolbar>
       </Container>
     </AppBar>

@@ -12,6 +12,8 @@ class Signup(graphene.Mutation):
     user = graphene.Field(lambda: UserType)
 
     def mutate(self, info, username, password):
+        if User.objects.filter(username=username).exists():
+            raise Exception("Username already exists")
         user = User.objects.create_user(username=username, password=password)
         return Signup(user=user)
 

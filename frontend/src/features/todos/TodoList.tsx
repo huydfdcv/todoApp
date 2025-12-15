@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { gql } from "@apollo/client";
 import { useQuery, useMutation } from "@apollo/client/react";
+import { List, ListItem, ListItemText, Checkbox, Box } from "@mui/material";
 import { PopupDialog } from "shared/ui/PopupDialog";
+import { MKInput } from "shared/ui/MKInput";
+import { MKButton } from "shared/ui/MKButton";
+import { MKTypography } from "shared/ui/MKTypography";
+import { MKBox } from "shared/ui/MKBox";
 
 const MY_TODOS = gql`
   query {
@@ -92,36 +97,72 @@ export function TodoList() {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div>
-      <h2>My Todos</h2>
-      <form onSubmit={handleAdd}>
-        <input
+    <MKBox>
+      <MKBox
+        component="form"
+        onSubmit={handleAdd}
+        sx={{ display: "flex", gap: 1.5, mb: 2, alignItems: "center" }}
+      >
+        <MKInput
+          placeholder="New todo"
           value={title}
           onChange={e => setTitle(e.target.value)}
-          placeholder="New todo"
         />
-        <button type="submit">Add</button>
-      </form>
-      <ul>
-        {data?.myTodos.map(todo => (
-          <li key={todo.id}>
-            <label>
-              <input
-                type="checkbox"
+        <MKButton type="submit" sx={{ whiteSpace: "nowrap" }}>
+          Add
+        </MKButton>
+      </MKBox>
+      {data?.myTodos.length ? (
+        <List>
+          {data.myTodos.map(todo => (
+            <ListItem
+              key={todo.id}
+              divider
+              secondaryAction={
+                <Box sx={{ display: "flex", gap: 1 }}>
+                  <MKButton
+                    size="small"
+                    variant="outlined"
+                    onClick={() => setEditingTodo(todo)}
+                  >
+                    Edit
+                  </MKButton>
+                  <MKButton
+                    size="small"
+                    variant="outlined"
+                    color="error"
+                    onClick={() => setDeletingTodo(todo)}
+                  >
+                    Delete
+                  </MKButton>
+                </Box>
+              }
+            >
+              <Checkbox
+                edge="start"
                 checked={todo.completed}
                 onChange={() => handleToggle(todo.id)}
               />
-              {todo.title}
-            </label>
-            <button type="button" onClick={() => setEditingTodo(todo)}>
-              Edit
-            </button>
-            <button type="button" onClick={() => setDeletingTodo(todo)}>
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
+              <ListItemText
+                primary={
+                  <MKTypography
+                    variant="body1"
+                    sx={{
+                      textDecoration: todo.completed ? "line-through" : "none",
+                    }}
+                  >
+                    {todo.title}
+                  </MKTypography>
+                }
+              />
+            </ListItem>
+          ))}
+        </List>
+      ) : (
+        <MKTypography variant="body2" color="textSecondary">
+          No todos yet. Add your first task.
+        </MKTypography>
+      )}
       <PopupDialog
         open={Boolean(editingTodo)}
         title="Edit todo"
@@ -162,12 +203,13 @@ export function TodoList() {
         }}
         extraContent={
           deletingTodo ? (
-            <p>
+            <MKTypography variant="body2">
               Are you sure you want to delete "{deletingTodo.title}"?
-            </p>
+            </MKTypography>
           ) : null
         }
       />
-    </div>
+    </MKBox>
+    
   );
 }
